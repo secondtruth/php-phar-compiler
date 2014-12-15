@@ -1,0 +1,27 @@
+{
+    "name": "secondtruth/phar-compiler",
+    "description": "Generic PHP PHAR compiler",
+    "homepage": "http://www.secondtruth.de",
+    "keywords": ["phar", "compiler"],
+    "license": "ISC",
+    "authors": [
+        {
+            "name": "Christian Neff",
+            "email": "christian.neff@gmail.com",
+            "homepage": "http://www.secondtruth.de",
+            "role": "Developer"
+        }
+    ],
+    "support": {
+        "issues": "https://github.com/secondtruth/php-phar-compiler/issues",
+        "source": "https://github.com/secondtruth/php-phar-compiler"
+    },
+    "require": {
+        "php": ">=5.4"
+    },
+    "autoload": {
+        "psr-4": {
+            "Secondtruth\\Compiler\\": "lib/"
+        }
+    }
+}
