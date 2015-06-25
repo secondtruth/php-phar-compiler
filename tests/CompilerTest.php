@@ -90,9 +90,4 @@ class CompilerTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue(isset($phar['dir/abc.php']));
         $this->assertFalse(isset($phar['dir/def.txt']));
     }
-
-    protected function doTest()
-    {
-
-    }
 }
