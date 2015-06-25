@@ -164,13 +164,7 @@ class Compiler
 
                 $subpath = substr($current->getPathName(), strlen($realpath) + 1);
 
-                foreach ((array) $exclude as $pattern) {
-                    if ($pattern[0] == '!' ? !fnmatch(substr($pattern, 1), $subpath) : fnmatch($pattern, $subpath)) {
-                        return false;
-                    }
-                }
-
-                return true;
+                return $this->filter($subpath, (array) $exclude);
             });
         }
 
@@ -261,6 +255,23 @@ class Compiler
         $stub[] = '__HALT_COMPILER();';
 
         return join("\n", $stub);
+    }
+
+    /**
+     * Filters the given path.
+     *
+     * @param array $patterns
+     * @return bool
+     */
+    private function filter($path, array $patterns)
+    {
+        foreach ($patterns as $pattern) {
+            if ($pattern[0] == '!' ? !fnmatch(substr($pattern, 1), $path) : fnmatch($pattern, $path)) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     /**
