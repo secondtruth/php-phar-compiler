@@ -105,30 +105,7 @@ class Compiler
             $phar->addFromString($virtualfile, $content);
         }
 
-        $stub = array('#!/usr/bin/env php', '<?php');
-        $stub[] = "Phar::mapPhar('$name');";
-        $stub[] = "if (PHP_SAPI == 'cli') {";
-
-        if (isset($this->index['cli'])) {
-            $file = $this->index['cli'][0];
-            $stub[] = " require 'phar://$name/$file';";
-        } else {
-            $stub[] = " exit('This program can not be invoked via the CLI version of PHP, use the Web interface instead.'.PHP_EOL);";
-        }
-
-        $stub[] = '} else {';
-
-        if (isset($this->index['web'])) {
-            $file = $this->index['web'][0];
-            $stub[] = " require 'phar://$name/$file';";
-        } else {
-            $stub[] = " exit('This program can not be invoked via the Web interface, use the CLI version of PHP instead.'.PHP_EOL);";
-        }
-
-        $stub[] = '}';
-        $stub[] = '__HALT_COMPILER();';
-
-        $stub = join("\n", $stub);
+        $stub = $this->generateStub($name);
         $phar->setStub($stub);
 
         $phar->stopBuffering();
@@ -250,6 +227,40 @@ class Compiler
     public function supportsSapi($sapi)
     {
         return in_array((string) $sapi, $this->getSupportedSapis());
+    }
+
+    /**
+     * Generates the stub.
+     *
+     * @param string $name The internal Phar name
+     * @return string
+     */
+    protected function generateStub($name)
+    {
+        $stub = array('#!/usr/bin/env php', '<?php');
+        $stub[] = "Phar::mapPhar('$name');";
+        $stub[] = "if (PHP_SAPI == 'cli') {";
+
+        if (isset($this->index['cli'])) {
+            $file = $this->index['cli'][0];
+            $stub[] = " require 'phar://$name/$file';";
+        } else {
+            $stub[] = " exit('This program can not be invoked via the CLI version of PHP, use the Web interface instead.'.PHP_EOL);";
+        }
+
+        $stub[] = '} else {';
+
+        if (isset($this->index['web'])) {
+            $file = $this->index['web'][0];
+            $stub[] = " require 'phar://$name/$file';";
+        } else {
+            $stub[] = " exit('This program can not be invoked via the Web interface, use the CLI version of PHP instead.'.PHP_EOL);";
+        }
+
+        $stub[] = '}';
+        $stub[] = '__HALT_COMPILER();';
+
+        return join("\n", $stub);
     }
 
     /**
