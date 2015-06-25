@@ -32,10 +32,19 @@ namespace Secondtruth\Compiler;
  */
 class Compiler
 {
+    /**
+     * @var string
+     */
     private $path;
 
+    /**
+     * @var array
+     */
     private $files = array();
 
+    /**
+     * @var array
+     */
     private $index = array();
 
     /**
@@ -46,8 +55,9 @@ class Compiler
      */
     public function __construct($path)
     {
-        if (ini_get('phar.readonly'))
+        if (ini_get('phar.readonly')) {
             throw new \LogicException('Creation of Phar archives is disabled in php.ini. Please make sure that "phar.readonly" is set to "off".');
+        }
 
         $this->path = realpath($path);
     }
@@ -60,11 +70,13 @@ class Compiler
      */
     public function compile($outputfile)
     {
-        if (empty($this->index))
+        if (empty($this->index)) {
             throw new \LogicException('Cannot compile when no index files are defined.');
+        }
 
-        if (file_exists($outputfile))
+        if (file_exists($outputfile)) {
             unlink($outputfile);
+        }
 
         $name = basename($outputfile);
         $phar = new \Phar($outputfile, 0, $name);
@@ -74,35 +86,45 @@ class Compiler
         foreach ($this->files as $virtualfile => $fileinfo) {
             list($realfile, $strip) = $fileinfo;
             $content = file_get_contents($realfile);
-            if ($strip)
+
+            if ($strip) {
                 $content = $this->stripWhitespace($content);
+            }
+
             $phar->addFromString($virtualfile, $content);
         }
 
         foreach ($this->index as $type => $fileinfo) {
             list($virtualfile, $realfile) = $fileinfo;
             $content = file_get_contents($realfile);
-            if ($type == 'cli')
+
+            if ($type == 'cli') {
                 $content = preg_replace('{^#!/usr/bin/env php\s*}', '', $content);
+            }
+
             $phar->addFromString($virtualfile, $content);
         }
 
         $stub = array('#!/usr/bin/env php', '<?php');
         $stub[] = "Phar::mapPhar('$name');";
         $stub[] = "if (PHP_SAPI == 'cli') {";
+
         if (isset($this->index['cli'])) {
             $file = $this->index['cli'][0];
             $stub[] = " require 'phar://$name/$file';";
         } else {
             $stub[] = " exit('This program can not be invoked via the CLI version of PHP, use the Web interface instead.'.PHP_EOL);";
         }
+
         $stub[] = '} else {';
+
         if (isset($this->index['web'])) {
             $file = $this->index['web'][0];
             $stub[] = " require 'phar://$name/$file';";
         } else {
             $stub[] = " exit('This program can not be invoked via the Web interface, use the CLI version of PHP instead.'.PHP_EOL);";
         }
+
         $stub[] = '}';
         $stub[] = '__HALT_COMPILER();';
 
@@ -159,14 +181,16 @@ class Compiler
 
         if ((is_string($exclude) || is_array($exclude)) && !empty($exclude)) {
             $iterator = new \RecursiveCallbackFilterIterator($iterator, function ($current) use ($exclude, $realpath) {
-                if ($current->isDir())
+                if ($current->isDir()) {
                     return true;
+                }
 
                 $subpath = substr($current->getPathName(), strlen($realpath) + 1);
 
                 foreach ((array) $exclude as $pattern) {
-                    if ($pattern[0] == '!' ? !fnmatch(substr($pattern, 1), $subpath) : fnmatch($pattern, $subpath))
+                    if ($pattern[0] == '!' ? !fnmatch(substr($pattern, 1), $subpath) : fnmatch($pattern, $subpath)) {
                         return false;
+                    }
                 }
 
                 return true;
@@ -200,8 +224,9 @@ class Compiler
     {
         $type = strtolower($type);
 
-        if (!in_array($type, ['cli', 'web']))
+        if (!in_array($type, ['cli', 'web'])) {
             throw new \InvalidArgumentException(sprintf('Index file type "%s" is invalid, must be one of: cli, web', $type));
+        }
 
         $this->index[$type] = [$file, realpath($this->path . DIRECTORY_SEPARATOR . $file)];
     }
@@ -220,6 +245,7 @@ class Compiler
      * Returns whether the compiled program will support the given SAPI type.
      *
      * @param string $sapi The SAPI type
+     * @return bool
      */
     public function supportsSapi($sapi)
     {
@@ -234,8 +260,9 @@ class Compiler
      */
     private function stripWhitespace($source)
     {
-        if (!function_exists('token_get_all'))
+        if (!function_exists('token_get_all')) {
             return $source;
+        }
 
         $output = '';
         foreach (token_get_all($source) as $token) {
