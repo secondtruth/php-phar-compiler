@@ -1,7 +1,7 @@
 <?php
 /**
  * Compiler Library
- * Copyright (C) 2014 secondtruth
+ * Copyright (C) 2015 secondtruth
  *
  * Permission to use, copy, modify, and/or distribute this software for
  * any purpose with or without fee is hereby granted, provided that the
@@ -16,7 +16,7 @@
  * OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  *
  * @package  Secondtruth\Compiler
- * @version  1.0-dev
+ * @version  1.0
  * @link     http://www.secpndtruth.de
  * @license  ISC License <http://opensource.org/licenses/ISC>
  */
