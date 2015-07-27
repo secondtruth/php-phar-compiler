@@ -1,6 +1,12 @@
 PHP PHAR Compiler
 =================
 
+[![Latest Stable](http://img.shields.io/packagist/v/secondtruth/phar-compiler.svg)](https://packagist.org/p/secondtruth/phar-compiler)
+[![Build Status](https://img.shields.io/travis/secondtruth/php-phar-compiler.svg)](https://travis-ci.org/secondtruth/php-phar-compiler)
+[![Scrutinizer](http://img.shields.io/scrutinizer/g/secondtruth/php-phar-compiler.svg)](https://scrutinizer-ci.com/g/secondtruth/php-phar-compiler)
+[![Coverage](http://img.shields.io/scrutinizer/coverage/g/secondtruth/php-phar-compiler.svg)](https://scrutinizer-ci.com/g/secondtruth/php-phar-compiler)
+[![License](http://img.shields.io/packagist/l/secondtruth/phar-compiler.svg)](https://packagist.org/p/secondtruth/phar-compiler)
+
 This library provides a generic PHP PHAR compiler.
 
 
