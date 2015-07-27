@@ -37,7 +37,7 @@ Create a file called `composer.json` in your project directory and put the follo
 ```
 {
     "require": {
-        "secondtruth/phar-compiler": "1.0.*"
+        "secondtruth/phar-compiler": "1.1.*"
     }
 }
 ```

@@ -16,7 +16,7 @@
  * OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  *
  * @package  Secondtruth\Compiler
- * @version  1.0
+ * @version  1.1
  * @link     http://www.secpndtruth.de
  * @license  ISC License <http://opensource.org/licenses/ISC>
  */
