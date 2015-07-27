@@ -171,7 +171,7 @@ class Compiler
         $iterator = new \RecursiveIteratorIterator($iterator);
         foreach ($iterator as $file) {
             $virtualfile = substr($file->getPathName(), strlen($this->path) + 1);
-            $this->files[$virtualfile] = [$file->getRealPath(), (bool) $strip];
+            $this->addFile($virtualfile, $strip);
         }
     }
 
