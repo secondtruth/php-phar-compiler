@@ -35,17 +35,17 @@ class Compiler
     /**
      * @var string
      */
-    private $path;
+    protected $path;
 
     /**
      * @var array
      */
-    private $files = array();
+    protected $files = array();
 
     /**
      * @var array
      */
-    private $index = array();
+    protected $index = array();
 
     /**
      * Creates a Compiler instance.
@@ -171,7 +171,7 @@ class Compiler
         $iterator = new \RecursiveIteratorIterator($iterator);
         foreach ($iterator as $file) {
             $virtualfile = substr($file->getPathName(), strlen($this->path) + 1);
-            $this->files[$virtualfile] = [$file->getRealPath(), (bool) $strip];
+            $this->addFile($virtualfile, $strip);
         }
     }
 
@@ -263,7 +263,7 @@ class Compiler
      * @param array $patterns
      * @return bool
      */
-    private function filter($path, array $patterns)
+    protected function filter($path, array $patterns)
     {
         foreach ($patterns as $pattern) {
             if ($pattern[0] == '!' ? !fnmatch(substr($pattern, 1), $path) : fnmatch($pattern, $path)) {
@@ -280,7 +280,7 @@ class Compiler
      * @param string $source A PHP string
      * @return string The PHP string with the whitespace removed
      */
-    private function stripWhitespace($source)
+    protected function stripWhitespace($source)
     {
         if (!function_exists('token_get_all')) {
             return $source;
