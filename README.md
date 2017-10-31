@@ -42,4 +42,4 @@ To install the library, run the following command and you will get the latest ve
 Requirements
 ------------
 
-* You must have at least PHP version 5.4 installed on your system.
+* You must have at least PHP version 5.6 installed on your system.
