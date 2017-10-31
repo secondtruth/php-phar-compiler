@@ -25,24 +25,30 @@ use Secondtruth\Compiler\Compiler;
 class CompilerTest extends \PHPUnit_Framework_TestCase
 {
     protected $testPhar;
+    protected static $testDir;
+    protected static $fixturesDir;
+
+    public static function setUpBeforeClass()
+    {
+        self::$testDir = rtrim(sys_get_temp_dir(), DIRECTORY_SEPARATOR);
+        self::$fixturesDir = realpath(__DIR__.DIRECTORY_SEPARATOR.'fixtures');
+    }
 
     public function setUp()
     {
-        $testDir = rtrim(sys_get_temp_dir(), DIRECTORY_SEPARATOR);
-
-        $testPharName = time().mt_rand(0, 1000).'.phar';
-        $this->testPhar = $testDir.DIRECTORY_SEPARATOR.$testPharName;
+        $testPharName = time().mt_rand(100, 999).'.phar';
+        $this->testPhar = self::$testDir.DIRECTORY_SEPARATOR.$testPharName;
     }
 
     public function tearDown()
     {
         unlink($this->testPhar);
+        unset($this->testPhar);
     }
 
     public function testAddFile()
     {
-        $path = realpath(__DIR__.'/fixtures');
-        $compiler = new Compiler($path);
+        $compiler = new Compiler(self::$fixturesDir);
         $compiler->addIndexFile('index.php');
         $compiler->addFile('dir/abc.php');
         $compiler->compile($this->testPhar);
@@ -55,8 +61,7 @@ class CompilerTest extends \PHPUnit_Framework_TestCase
 
     public function testAddDirectory()
     {
-        $path = realpath(__DIR__.'/fixtures');
-        $compiler = new Compiler($path);
+        $compiler = new Compiler(self::$fixturesDir);
         $compiler->addIndexFile('index.php');
         $compiler->addDirectory('dir');
         $compiler->compile($this->testPhar);
@@ -70,10 +75,9 @@ class CompilerTest extends \PHPUnit_Framework_TestCase
 
     public function testAddDirectoryWithFilter()
     {
-        $path = realpath(__DIR__.'/fixtures');
-        $compiler = new Compiler($path);
+        $compiler = new Compiler(self::$fixturesDir);
         $compiler->addIndexFile('index.php');
-        $compiler->addDirectory('dir', '!*php');
+        $compiler->addDirectory('dir', '!*.php');
         $compiler->compile($this->testPhar);
 
         $this->assertFileExists($this->testPhar);
