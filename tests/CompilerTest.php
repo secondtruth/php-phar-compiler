@@ -77,6 +77,20 @@ class CompilerTest extends \PHPUnit_Framework_TestCase
     {
         $compiler = new Compiler(self::$fixturesDir);
         $compiler->addIndexFile('index.php');
+        $compiler->addDirectory('dir', '*.txt');
+        $compiler->compile($this->testPhar);
+
+        $this->assertFileExists($this->testPhar);
+
+        $phar = new \Phar($this->testPhar);
+        $this->assertTrue(isset($phar['dir/abc.php']));
+        $this->assertFalse(isset($phar['dir/def.txt']));
+    }
+
+    public function testAddDirectoryWithInvertedFilter()
+    {
+        $compiler = new Compiler(self::$fixturesDir);
+        $compiler->addIndexFile('index.php');
         $compiler->addDirectory('dir', '!*.php');
         $compiler->compile($this->testPhar);
 
