@@ -32,7 +32,7 @@ Installation
 
 ### Install via Composer
 
-[Install Composer](https://getcomposer.org/doc/00-intro.md#installation-linux-unix-osx) if you don't already have it present on your system.
+[Install Composer](https://getcomposer.org/doc/00-intro.md#installation-linux-unix-macos) if you don't already have it present on your system.
 
 To install the library, run the following command and you will get the latest version:
 
