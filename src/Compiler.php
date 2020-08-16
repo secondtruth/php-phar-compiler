@@ -8,7 +8,7 @@
  * above copyright notice and this permission notice appear in all copies.
  *
  * @package  Secondtruth\Compiler
- * @version  1.1
+ * @version  1.2
  * @link     https://www.secpndtruth.de
  * @license  https://opensource.org/licenses/MIT MIT License
  */
