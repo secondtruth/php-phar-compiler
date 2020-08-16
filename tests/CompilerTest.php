@@ -1,7 +1,7 @@
 <?php
 /**
  * PHAR Compiler Library
- * Copyright (C) 2017 Christian Neff
+ * Copyright (C) 2020 Christian Neff
  *
  * Permission to use, copy, modify, and/or distribute this software for
  * any purpose with or without fee is hereby granted, provided that the
@@ -9,8 +9,8 @@
  *
  * @package  Secondtruth\Compiler
  * @version  1.1
- * @link     http://www.secpndtruth.de
- * @license  http://opensource.org/licenses/ISC ISC License
+ * @link     https://www.secpndtruth.de
+ * @license  https://opensource.org/licenses/MIT MIT License
  */
 
 namespace Secondtruth\Compiler\Tests;
