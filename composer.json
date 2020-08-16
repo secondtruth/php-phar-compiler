@@ -1,9 +1,9 @@
 {
     "name": "secondtruth/phar-compiler",
     "description": "Generic PHP PHAR compiler",
-    "homepage": "http://www.secondtruth.de",
+    "homepage": "https://www.secondtruth.de",
     "keywords": ["phar", "compiler"],
-    "license": "ISC",
+    "license": "MIT",
     "authors": [
         {
             "name": "Christian Neff",
