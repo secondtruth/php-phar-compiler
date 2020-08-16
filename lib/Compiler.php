@@ -57,44 +57,44 @@ class Compiler
     /**
      * Compiles all files into a single PHAR file.
      *
-     * @param string $outputfile The full name of the file to create
+     * @param string $outputFile The full name of the file to create
      * @throws \LogicException if no index files are defined.
      */
-    public function compile($outputfile)
+    public function compile($outputFile)
     {
         if (empty($this->index)) {
             throw new \LogicException('Cannot compile when no index files are defined.');
         }
 
-        if (file_exists($outputfile)) {
-            unlink($outputfile);
+        if (file_exists($outputFile)) {
+            unlink($outputFile);
         }
 
-        $name = basename($outputfile);
-        $phar = new \Phar($outputfile, 0, $name);
+        $name = basename($outputFile);
+        $phar = new \Phar($outputFile, 0, $name);
         $phar->setSignatureAlgorithm(\Phar::SHA1);
         $phar->startBuffering();
 
-        foreach ($this->files as $virtualfile => $fileinfo) {
-            list($realfile, $strip) = $fileinfo;
-            $content = file_get_contents($realfile);
+        foreach ($this->files as $virtualFile => $fileInfo) {
+            list($realFile, $strip) = $fileInfo;
+            $content = file_get_contents($realFile);
 
             if ($strip) {
                 $content = $this->stripWhitespace($content);
             }
 
-            $phar->addFromString($virtualfile, $content);
+            $phar->addFromString($virtualFile, $content);
         }
 
-        foreach ($this->index as $type => $fileinfo) {
-            list($virtualfile, $realfile) = $fileinfo;
-            $content = file_get_contents($realfile);
+        foreach ($this->index as $type => $fileInfo) {
+            list($virtualFile, $realFile) = $fileInfo;
+            $content = file_get_contents($realFile);
 
             if ($type == 'cli') {
                 $content = preg_replace('{^#!/usr/bin/env php\s*}', '', $content);
             }
 
-            $phar->addFromString($virtualfile, $content);
+            $phar->addFromString($virtualFile, $content);
         }
 
         $stub = $this->generateStub($name);
@@ -132,8 +132,8 @@ class Compiler
      */
     public function addFile($file, $strip = true)
     {
-        $realfile = realpath($this->path . DIRECTORY_SEPARATOR . $file);
-        $this->files[$file] = [$realfile, (bool) $strip];
+        $realFile = realpath($this->path . DIRECTORY_SEPARATOR . $file);
+        $this->files[$file] = [$realFile, (bool) $strip];
     }
 
     /**
@@ -145,25 +145,28 @@ class Compiler
      */
     public function addDirectory($directory, $exclude = null, $strip = true)
     {
-        $realpath = realpath($this->path . DIRECTORY_SEPARATOR . $directory);
-        $iterator = new \RecursiveDirectoryIterator($realpath, \FilesystemIterator::SKIP_DOTS | \FilesystemIterator::UNIX_PATHS);
+        $realPath = realpath($this->path . DIRECTORY_SEPARATOR . $directory);
+        $iterator = new \RecursiveDirectoryIterator(
+            $realPath,
+            \FilesystemIterator::SKIP_DOTS | \FilesystemIterator::UNIX_PATHS | \FilesystemIterator::CURRENT_AS_SELF
+        );
 
         if ((is_string($exclude) || is_array($exclude)) && !empty($exclude)) {
-            $iterator = new \RecursiveCallbackFilterIterator($iterator, function ($current) use ($exclude, $realpath) {
+            $exclude = (array) $exclude;
+            $iterator = new \RecursiveCallbackFilterIterator($iterator, function (\RecursiveDirectoryIterator $current) use ($exclude) {
                 if ($current->isDir()) {
                     return true;
                 }
 
-                $subpath = substr($current->getPathName(), strlen($realpath) + 1);
-
-                return $this->filter($subpath, (array) $exclude);
+                return $this->filter($current->getSubPathname(), $exclude);
             });
         }
 
         $iterator = new \RecursiveIteratorIterator($iterator);
         foreach ($iterator as $file) {
-            $virtualfile = substr($file->getPathName(), strlen($this->path) + 1);
-            $this->addFile($virtualfile, $strip);
+            /** @var \SplFileInfo $file */
+            $virtualFile = substr($file->getPathName(), strlen($this->path) + 1);
+            $this->addFile($virtualFile, $strip);
         }
     }
 
@@ -223,7 +226,7 @@ class Compiler
      */
     protected function generateStub($name)
     {
-        $stub = array('#!/usr/bin/env php', '<?php');
+        $stub = ['#!/usr/bin/env php', '<?php'];
         $stub[] = "Phar::mapPhar('$name');";
         $stub[] = "if (PHP_SAPI == 'cli') {";
 
@@ -250,15 +253,35 @@ class Compiler
     }
 
     /**
+     * Matches the given path.
+     *
+     * @param string $path
+     * @param string $pattern
+     * @return bool
+     */
+    protected function match($path, $pattern)
+    {
+        $inverted = false;
+
+        if ($pattern[0] == '!') {
+            $pattern = substr($pattern, 1);
+            $inverted = true;
+        }
+
+        return fnmatch($pattern, $path) == ($inverted ? false : true);
+    }
+
+    /**
      * Filters the given path.
      *
+     * @param string $path
      * @param array $patterns
      * @return bool
      */
     protected function filter($path, array $patterns)
     {
         foreach ($patterns as $pattern) {
-            if ($pattern[0] == '!' ? !fnmatch(substr($pattern, 1), $path) : fnmatch($pattern, $path)) {
+            if ($this->match($path, $pattern)) {
                 return false;
             }
         }
