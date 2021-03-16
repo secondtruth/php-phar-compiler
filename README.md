@@ -36,7 +36,7 @@ Installation
 
 To install the library, run the following command and you will get the latest version:
 
-    $ php composer.phar require secondtruth/phar-compiler
+    $ composer require secondtruth/phar-compiler
 
 
 Requirements
